@@ -73,6 +73,8 @@ public class PropertyExpression extends CompoundExpression {
 				return new BinaryProperty(compiled[0]);
 			case "pbkdf2":
 				return new PBKDF2Property(compiled[0]);
+			case "timestamp" :
+				return new TimestampProperty(compiled[0]);
 			default:
 				throw new UnsupportedOperationException("Do not know how to compile property " + id.getString());
 		}
