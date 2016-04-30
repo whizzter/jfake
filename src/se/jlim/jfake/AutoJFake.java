@@ -50,7 +50,7 @@ public class AutoJFake implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce) {
 		String autoName = AutoJFake.class.getClass().getName();
 		System.out.println("AutoName:" + autoName);
-		try (InputStream is = sce.getServletContext().getResourceAsStream("/WEB-INF/jfake.txt")) {
+		try (InputStream is = sce.getServletContext().getResourceAsStream("/WEB-INF/auto.jfake")) {
 
 			if (is == null) {
 				System.out.println("xfake.xml not found in WEB-INF , not initialized");
