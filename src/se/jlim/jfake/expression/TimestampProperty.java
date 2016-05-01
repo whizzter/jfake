@@ -83,11 +83,10 @@ public class TimestampProperty implements Generator {
 				}
 			}
 			LocalDateTime ldt = LocalDateTime.of(ymdhms[0], ymdhms[1], ymdhms[2], ymdhms[3], ymdhms[4],ymdhms[5]);
-			System.out.println(base+" parsed as "+ldt+" ("+(Timestamp.valueOf(ldt).getTime())+")");
+			//System.out.println(base+" parsed as "+ldt+" ("+(Timestamp.valueOf(ldt).getTime())+")");
 			return Timestamp.valueOf(ldt);
 		} else if (base instanceof Number) {
-			
-			System.out.println(base+"->"+new Timestamp(((Number)base).longValue()));
+			//System.out.println(base+"->"+new Timestamp(((Number)base).longValue()));
 			return new Timestamp(((Number)base).longValue());
 		} else throw new RuntimeException("Do not know how to convert "+base+" to a timestamp");
 	}
