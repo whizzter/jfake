@@ -53,7 +53,7 @@ public class AutoJFake implements ServletContextListener {
 		try (InputStream is = sce.getServletContext().getResourceAsStream("/WEB-INF/auto.jfake")) {
 
 			if (is == null) {
-				System.out.println("xfake.xml not found in WEB-INF , not initialized");
+				System.out.println("auto.jfake not found in WEB-INF , not initialized");
 				return;
 			}
 
@@ -64,12 +64,14 @@ public class AutoJFake implements ServletContextListener {
 				InitialContext ic = new InitialContext();
 				DataSource ds = (DataSource) ic.lookup(dsString);
 
-				JFakeTarget target = new JDBCTarget(ds);
-				jf.build(target);
+				try (JDBCTarget target = new JDBCTarget(ds)) {
+					jf.build(target);
+				}
 			} else {
-				System.out.println("AutoName:" + autoName);
-				JFakeTarget target = new JPATarget();
-				jf.build(target);
+				throw new IllegalStateException("Not @datasource given in auto.jfake");
+				//System.out.println("AutoName:" + autoName);
+				//JFakeTarget target = new JPATarget();
+				//jf.build(target);
 			}
 
 		} catch (NamingException | IOException | SQLException ex) {
