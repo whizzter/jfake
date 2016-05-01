@@ -24,32 +24,47 @@
 package se.jlim.jfake.expression;
 
 import java.sql.Timestamp;
+import se.jlim.jfake.Token;
 
 /**
  *
  * @author Jonas Lund
  */
-public class RangeExpression implements Generator {
-    
-	Expression[] subs;
-	Generator[] compiled;
+public class RangeExpression extends CompoundExpression implements Generator {
+
+	//Expression[] subs;
+	//Generator[] compiled;
 	Long pa = null;
 	Long pb = null;
-
-	public RangeExpression(Expression[] subs, Generator[] compiled) {
-		this.subs = subs;
-		this.compiled = compiled;
+	
+	public RangeExpression(Token tok,Expression... subs) {
+		super(tok,subs);
 	}
+
+	@Override
+	public Generator compileExpr() {
+		return this;
+	}
+	
+
+	@Override
+	public String toString() {
+		return subs[0] + ":" + subs[1];
+	}
+	//public RangeExpression(Expression[] subs, Generator[] compiled) {
+	//	this.subs = subs;
+	//	this.compiled = compiled;
+	//}
 
 	@Override
 	public Long size() {
 		Object a = compiled[0].get(0, 0);
 		Object b = compiled[1].get(0, 0);
 		if (a instanceof Timestamp) {
-			a=((Timestamp)a).getTime();
+			a = ((Timestamp) a).getTime();
 		}
 		if (b instanceof Timestamp) {
-			b=((Timestamp)b).getTime();
+			b = ((Timestamp) b).getTime();
 		}
 		if (!(a instanceof Long) || (pa != null && ((Long) a) != (long) pa)) {
 			throw new RuntimeException(subs[0] + " is not an integer or varies between invocations");
@@ -69,5 +84,5 @@ public class RangeExpression implements Generator {
 		}
 		return idx + (long) pa;
 	}
-    
+
 }

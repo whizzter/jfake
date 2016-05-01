@@ -42,6 +42,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -49,12 +51,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import se.jlim.jfake.expression.AddExpression;
 import se.jlim.jfake.expression.PropertyExpression;
 import se.jlim.jfake.expression.PropertyHolder;
 import se.jlim.jfake.expression.RowExpression;
+import se.jlim.jfake.expression.ValueGenerator;
 
 /**
  * The main JFake class, works as a standalone application to be run independantly
@@ -115,24 +121,23 @@ public class JFake {
 			Long startId=constProp(jf.properties,"@startid",Long.class);
 			if (startId!=null)
 				jf.nextId=startId;
-			jf.named.put("@autoid", new CompoundExpression(new Token(null, -1, null)){
-				//(se.jlim.jfake.JFake.Token tok, se.jlim.jfake.Expression... subs) {
-				//}
+			jf.named.put("@autoid", new ValueGenerator(new Token(null, -1, null)){
 				@Override
-				public Generator compileExpr() {
-					return new Generator() {
-						@Override
-						public Long size() {
-							return null;
-						}
-
-						@Override
-						public Object get(long idx, long seed) {
-							return jf.nextId++;
-						}
-					};
+				public Object get(long idx, long seed) {
+					return jf.nextId++;
 				}
-				
+			});
+			SecureRandom sr;
+			try {
+				sr = SecureRandom.getInstanceStrong();
+			} catch (NoSuchAlgorithmException ex) {
+				throw new RuntimeException(ex);
+			}
+			jf.named.put("@securebyte", new ValueGenerator(new Token(null, -1, null)){
+				@Override
+				public Object get(long idx, long seed) {
+					return (long)sr.nextInt(256);
+				}
 			});
 			// Resolve expressions
 			List<Column> notDone = new ArrayList<>();
@@ -427,52 +432,12 @@ public class JFake {
 					switch (op.str) {
 						case "+": {
 							Expression sec = parseSuffixExpression(toks, opLevel + 1);
-							expr=new CompoundExpression(op, expr,sec) {
-								public String toString() {
-									return subs[0]+"+"+subs[1];
-								}
-								public Generator compileExpr() {
-									return new Generator() {
-										@Override
-										public Long size() {
-											Long sz=null;
-											for (Generator sub:compiled) {
-												Long t=sub.size();
-												if (t!=null)
-													if (sz==null)
-														sz=t;
-													else if ((long)sz!=(long)t)
-														throw new RuntimeException(subs[0]+" specifies a different size than "+subs[1]+" -> "+sz+"!="+t);
-											}
-											return sz;
-										}
-										@Override
-										public Object get(long idx, long seed) {
-											Object a=compiled[0].get(idx, seed);
-											Object b=compiled[1].get(idx, seed);
-											if (a instanceof String || b instanceof String) {
-												return (a==null?"<NULL>":a.toString())+(b==null?"<NULL>":b.toString());
-											} else if (a instanceof Long && b instanceof Long) {
-												return ((Long)a)+((Long)b);
-											} else throw new RuntimeException("Do not know how to add "+a+" and "+b);
-										}
-									};
-								}
-							};
+							expr=new AddExpression(op, expr,sec);
 							continue again;
 						}
 						case ":": {
 							Expression sec = parseSuffixExpression(toks, opLevel + 1);
-							expr=new CompoundExpression(op, expr,sec) {
-								@Override
-								public String toString() {
-									return subs[0]+":"+subs[1];
-								}
-								@Override
-								public Generator compileExpr() {
-									return new RangeExpression(subs,compiled);
-								}
-							};
+							expr=new RangeExpression(op,expr,sec);
 							continue again;
 						}
 						case ".": {
