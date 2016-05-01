@@ -57,23 +57,23 @@ public class PBKDF2Property implements Generator {
 		}
 	}
 	
-	public Integer size() {
+	public Long size() {
 		return le.compiled[0].size();
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
+	public Object get(long idx, long seed) {
 		try {
 			Object saltData=le.compiled[1].get(0, seed+idx);
 			if (!(saltData instanceof byte[])) {
 				throw new RuntimeException("Salt for PBKDF2 must be in binary");
 			}
 			byte[] salt=(byte[]) saltData;
-			int iter=10000;
+			long iter=10000;
 			if (le.compiled.length>2)
-				iter=(Integer) le.compiled[2].get(0,seed+idx);
+				iter=(Long) le.compiled[2].get(0,seed+idx);
 			String password=(String)le.compiled[0].get(idx, JFake.tumble(seed+idx));
-			PBEKeySpec spec=new PBEKeySpec(password.toCharArray(),salt,iter,512);
+			PBEKeySpec spec=new PBEKeySpec(password.toCharArray(),salt,(int)iter,512);
 			SecretKey secret = skf.generateSecret(spec);
 			return secret.getEncoded();
 		} catch (InvalidKeySpecException ex) {

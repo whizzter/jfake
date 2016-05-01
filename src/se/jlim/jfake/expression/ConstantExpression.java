@@ -45,12 +45,12 @@ public class ConstantExpression extends CompoundExpression implements Generator 
 	}
 
 	@Override
-	public Integer size() {
+	public Long size() {
 		return null;
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
+	public Object get(long idx, long seed) {
 		return value;
 	}
     

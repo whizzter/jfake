@@ -112,7 +112,7 @@ public class JFake {
 			LinkedList<Token> tokens = tokenize(sb);
 			JFake jf = new JFake();
 			jf.parseLevel(tokens, jf.properties, null);
-			Integer startId=constProp(jf.properties,"@startid",Integer.class);
+			Long startId=constProp(jf.properties,"@startid",Long.class);
 			if (startId!=null)
 				jf.nextId=startId;
 			jf.named.put("@autoid", new CompoundExpression(new Token(null, -1, null)){
@@ -122,12 +122,12 @@ public class JFake {
 				public Generator compileExpr() {
 					return new Generator() {
 						@Override
-						public Integer size() {
+						public Long size() {
 							return null;
 						}
 
 						@Override
-						public Object get(int idx, long seed) {
+						public Object get(long idx, long seed) {
 							return jf.nextId++;
 						}
 					};
@@ -155,18 +155,18 @@ public class JFake {
 					if (out!=null && out.size()!=null) {
 						if (col.parent.size==null) {
 							col.parent.size=out.size();
-						} else if ((int)col.parent.size!=(int)out.size()) {
+						} else if ((long)col.parent.size!=(long)out.size()) {
 							throw new RuntimeException("Mismatching size between table "+col.parent.name+" and column "+col.name);
 						}
 					}
 					if (out!=null && col.parent.size!=null) {
 						col.compiled=out;
 						//System.out.println(".. done");
-						col.data=new Object[col.parent.size];
+						col.data=new Object[(int)(long)col.parent.size];
 						if (out.size()!=null) {
 							if (col.parent.size==null)
 								col.parent.size=out.size();
-							else if (((int)col.parent.size)!=((int)out.size()))
+							else if (((long)col.parent.size)!=((long)out.size()))
 								throw new IOException("Error, "+col.parent.name+"."+col.name+" has mismatching size compared to another column in the table");
 						}
 						jf.outOrder.add(notDone.remove(i));
@@ -210,7 +210,7 @@ public class JFake {
 		return (T)value;
 	}
 
-	int nextId=1;
+	long nextId=1;
 	//Random r=new Random(0);
 	
 	
@@ -434,26 +434,26 @@ public class JFake {
 								public Generator compileExpr() {
 									return new Generator() {
 										@Override
-										public Integer size() {
-											Integer sz=null;
+										public Long size() {
+											Long sz=null;
 											for (Generator sub:compiled) {
-												Integer t=sub.size();
+												Long t=sub.size();
 												if (t!=null)
 													if (sz==null)
 														sz=t;
-													else if ((int)sz!=(int)t)
+													else if ((long)sz!=(long)t)
 														throw new RuntimeException(subs[0]+" specifies a different size than "+subs[1]+" -> "+sz+"!="+t);
 											}
 											return sz;
 										}
 										@Override
-										public Object get(int idx, long seed) {
+										public Object get(long idx, long seed) {
 											Object a=compiled[0].get(idx, seed);
 											Object b=compiled[1].get(idx, seed);
 											if (a instanceof String || b instanceof String) {
 												return (a==null?"<NULL>":a.toString())+(b==null?"<NULL>":b.toString());
-											} else if (a instanceof Integer && b instanceof Integer) {
-												return ((Integer)a)+((Integer)b);
+											} else if (a instanceof Long && b instanceof Long) {
+												return ((Long)a)+((Long)b);
 											} else throw new RuntimeException("Do not know how to add "+a+" and "+b);
 										}
 									};
@@ -523,7 +523,7 @@ public class JFake {
 				};
 			case NUM: {
 				toks.removeFirst();
-				return new ConstantExpression(t,Integer.parseInt( t.str ));
+				return new ConstantExpression(t,Long.parseLong( t.str ));
 			}
 			case STR:
 				toks.removeFirst();
@@ -548,7 +548,7 @@ public class JFake {
 			case "[": {
 				toks.removeFirst();
 				List<Expression> subs=new ArrayList<>();
-				List<Integer> percentages=new ArrayList<>();
+				List<Long> percentages=new ArrayList<>();
 				while (true) {
 					subs.add(parseExpression(toks));
 					if (toks.isEmpty()) {
@@ -561,7 +561,7 @@ public class JFake {
 						Token percentage = toks.removeFirst();
 						if (percentage.kind!=Token.Kind.NUM)
 							throw new ParseException("Percentage was not a number but "+percentage.str, percentage);
-						percentages.add(Integer.parseInt(percentage.str));
+						percentages.add(Long.parseLong(percentage.str));
 						if (toks.isEmpty()) {
 							throw new ParseException("List was not terminated properly after percentage", percentSign);
 						}

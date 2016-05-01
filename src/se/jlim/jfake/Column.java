@@ -56,13 +56,13 @@ public class Column implements Expression, Generator {
 	}
 
 	@Override
-	public Integer size() {
-		return data.length;
+	public Long size() {
+		return (long)data.length;
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
-		return data[idx];
+	public Object get(long idx, long seed) {
+		return data[(int)idx];
 	}
     
 }

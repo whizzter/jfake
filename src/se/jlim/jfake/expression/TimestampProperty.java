@@ -24,6 +24,10 @@
 package se.jlim.jfake.expression;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -38,18 +42,52 @@ public class TimestampProperty implements Generator {
 	}
 
 	@Override
-	public Integer size() {
+	public Long size() {
 		return src.size();
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
+	public Object get(long idx, long seed) {
 		Object base=src.get(idx,seed);
 		if (base==null) {
 			return null;
 		} else if (base instanceof String) {
-			return Timestamp.valueOf((String)base);
+			int nc=0;
+			int part=0;
+			int[] ymdhms=new int[]{0,1,1,0,0,0};
+			String s=(String)base;
+			int si=0;
+			while(true) {
+				if (si>=s.length()) {
+					if (part==0 && nc==0)
+						throw new IllegalArgumentException("Could not interpret "+base+" as a date");
+					break;
+				}
+				char c=s.charAt(si);
+				if ('0'<=c && c<='9') {
+					ymdhms[part]=(nc==0?0:ymdhms[part]*10) + (c-'0');
+					nc++;
+					si++;
+					continue;
+				} else if (nc==0) {
+					throw new IllegalArgumentException("Could not interpret "+base+" as a date");
+				} else if ((part<2 && c=='-')||(part==2 && c==' ')||(part>2 && c==':')) {
+					part++;
+					nc=0;
+					si++;
+					if (part==6)
+						throw new IllegalArgumentException("Could not interpret "+base+" as a date");
+					continue;
+				} else {
+					throw new IllegalArgumentException("Could not interpret "+base+" as a date");
+				}
+			}
+			LocalDateTime ldt = LocalDateTime.of(ymdhms[0], ymdhms[1], ymdhms[2], ymdhms[3], ymdhms[4],ymdhms[5]);
+			System.out.println(base+" parsed as "+ldt+" ("+(Timestamp.valueOf(ldt).getTime())+")");
+			return Timestamp.valueOf(ldt);
 		} else if (base instanceof Number) {
+			
+			System.out.println(base+"->"+new Timestamp(((Number)base).longValue()));
 			return new Timestamp(((Number)base).longValue());
 		} else throw new RuntimeException("Do not know how to convert "+base+" to a timestamp");
 	}

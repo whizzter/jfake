@@ -38,18 +38,18 @@ public class RandomProperty implements Generator {
 	}
 
 	@Override
-	public Integer size() {
+	public Long size() {
 		return null;
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
+	public Object get(long idx, long seed) {
 		seed = JFake.tumble(idx + seed);
-		Integer ss = sub.size();
+		Long ss = sub.size();
 		if (ss == null) {
 			return sub.get(0, seed);
 		} else {
-			return sub.get((int) ((seed & 0x7fffffffffffffffl) % (long) ss), seed);
+			return sub.get((long) ((seed & 0x7fffffffffffffffl) % (long) ss), seed);
 		}
 	}
     

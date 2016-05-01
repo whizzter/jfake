@@ -36,19 +36,19 @@ public class BinaryProperty implements Generator  {
 	}
 
 	@Override
-	public Integer size() {
+	public Long size() {
 		return null;
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
-		Integer size=gen.size();
+	public Object get(long idx, long seed) {
+		Long size=gen.size();
 		if (size==null) {
-			return new byte[]{ (byte)(int)(Integer)gen.get(0, seed) };
+			return new byte[]{ (byte)(long)(Long)gen.get(0, seed) };
 		} else {
-			byte[] data=new byte[size];
+			byte[] data=new byte[(int)(long)size];
 			for (int i=0;i<size;i++) {
-				data[i]=(byte)(int)(Integer)gen.get(i,seed+i);
+				data[i]=(byte)(long)(Long)gen.get(i,seed+i);
 			}
 			return data;
 		}

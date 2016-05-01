@@ -34,10 +34,10 @@ import se.jlim.jfake.Token;
  */
 public class ListExpression extends CompoundExpression implements Generator {
     
-	final List<Integer> initPercentages;
+	final List<Long> initPercentages;
 	double[] percentages = null;
 
-	public ListExpression(Token t, List<Expression> subs, List<Integer> percentages) {
+	public ListExpression(Token t, List<Expression> subs, List<Long> percentages) {
 		super(t, subs.toArray(new Expression[subs.size()]));
 		this.initPercentages = percentages;
 		//
@@ -84,10 +84,10 @@ public class ListExpression extends CompoundExpression implements Generator {
 	}
 
 	@Override
-	public Integer size() {
-		int sum = 0;
+	public Long size() {
+		long sum = 0;
 		for (Generator g : compiled) {
-			Integer sz = g.size();
+			Long sz = g.size();
 			if (sz != null) {
 				sum += sz;
 			} else {
@@ -98,11 +98,11 @@ public class ListExpression extends CompoundExpression implements Generator {
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
-		int sum = 0;
+	public Object get(long idx, long seed) {
+		long sum = 0;
 		for (Generator g : compiled) {
-			Integer sz = g.size();
-			int loc = sz == null ? 1 : sz;
+			Long sz = g.size();
+			long loc = sz == null ? 1 : sz;
 			if (sum <= idx && idx < sum + loc) {
 				return g.get(idx - sum, seed);
 			}

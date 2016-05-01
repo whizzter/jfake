@@ -23,6 +23,8 @@
  */
 package se.jlim.jfake.expression;
 
+import java.sql.Timestamp;
+
 /**
  *
  * @author Jonas Lund
@@ -31,8 +33,8 @@ public class RangeExpression implements Generator {
     
 	Expression[] subs;
 	Generator[] compiled;
-	Integer pa = null;
-	Integer pb = null;
+	Long pa = null;
+	Long pb = null;
 
 	public RangeExpression(Expression[] subs, Generator[] compiled) {
 		this.subs = subs;
@@ -40,26 +42,32 @@ public class RangeExpression implements Generator {
 	}
 
 	@Override
-	public Integer size() {
+	public Long size() {
 		Object a = compiled[0].get(0, 0);
 		Object b = compiled[1].get(0, 0);
-		if (!(a instanceof Integer) || (pa != null && ((Integer) a) != (int) pa)) {
+		if (a instanceof Timestamp) {
+			a=((Timestamp)a).getTime();
+		}
+		if (b instanceof Timestamp) {
+			b=((Timestamp)b).getTime();
+		}
+		if (!(a instanceof Long) || (pa != null && ((Long) a) != (long) pa)) {
 			throw new RuntimeException(subs[0] + " is not an integer or varies between invocations");
 		}
-		if (!(b instanceof Integer) || (pb != null && ((Integer) b) != (int) pb)) {
+		if (!(b instanceof Long) || (pb != null && ((Long) b) != (long) pb)) {
 			throw new RuntimeException(subs[1] + " is not an integer or varies between invocations");
 		}
-		pa = (Integer) a;
-		pb = (Integer) b;
-		return (int) b - (int) a + 1;
+		pa = (Long) a;
+		pb = (Long) b;
+		return (long) b - (long) a + 1;
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
+	public Object get(long idx, long seed) {
 		if (pa == null || pb == null) {
 			size();
 		}
-		return idx + (int) pa;
+		return idx + (long) pa;
 	}
     
 }

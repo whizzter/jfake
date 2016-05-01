@@ -59,12 +59,12 @@ public class RowExpression implements Expression,PropertyHolder {
 					return null;
 				return new Generator() {
 					@Override
-					public Integer size() {
+					public Long size() {
 						return null;
 					}
 
 					@Override
-					public Object get(int idx, long seed) {
+					public Object get(long idx, long seed) {
 						return gen.get(row, seed);
 					}
 				};

@@ -40,7 +40,7 @@ public class Table implements Expression,PropertyHolder {
 	String name;
 	Map<String, Column> columns = new TreeMap<>();
 	Map<String, Expression> properties = new TreeMap<>();
-	Integer size = null;
+	Long size = null;
 	RowExpression rowExpression; 
 
 	public Table(String name) {

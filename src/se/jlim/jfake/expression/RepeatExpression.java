@@ -45,20 +45,20 @@ public class RepeatExpression extends CompoundExpression implements Generator {
 	public Generator compileExpr() {
 		return this;
 	}
-	Integer stored = null;
+	Long stored = null;
 
 	@Override
-	public Integer size() {
+	public Long size() {
 		Object out = compiled[1].get(0, 0);
-		if (!(out instanceof Integer) || (stored != null && ((Integer) out) != (int) stored)) {
+		if (!(out instanceof Long) || (stored != null && ((Long) out) != (long) stored)) {
 			throw new RuntimeException(out + " is not an integer or has varied between invocations");
 		}
-		stored = (Integer) out;
+		stored = (Long)out;
 		return stored;
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
+	public Object get(long idx, long seed) {
 		return compiled[0].get(idx, JFake.tumble(seed + idx));
 	}
     

@@ -29,8 +29,8 @@ package se.jlim.jfake.expression;
  */
 public interface Generator {
 
-	public Integer size();
+	public Long size();
 
-	public Object get(int idx, long seed);
+	public Object get(long idx, long seed);
     
 }

@@ -38,23 +38,23 @@ public class ConcatProperty implements Generator {
 	}
 
 	@Override
-	public Integer size() {
+	public Long size() {
 		return null;
 	}
 
 	@Override
-	public Object get(int idx, long seed) {
+	public Object get(long idx, long seed) {
 		seed = JFake.tumble(idx + seed);
-		Integer ss = null;
+		Long ss = null;
 		if (sub instanceof RepeatExpression) {
 			RepeatExpression rp = (RepeatExpression) sub;
 			if (rp.compiled[1] instanceof RangeExpression) {
 				RangeExpression rag = (RangeExpression) rp.compiled[1];
 				Object a = rag.compiled[0].get(0, 0);
 				Object b = rag.compiled[1].get(0, 0);
-				if (a instanceof Integer && b instanceof Integer) {
-					int min = (Integer) a;
-					int max = Math.max((Integer) b, min);
+				if (a instanceof Long && b instanceof Long) {
+					long min = (Long) a;
+					long max = Math.max((Long) b, min);
 					ss = min + (int) ((seed & 0x7fffffffffffffffl) % (max - min + 1));
 				}
 			}
