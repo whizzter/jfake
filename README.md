@@ -21,16 +21,31 @@ A full sample is at the end of this README.md (also samples can be found under t
 The Jfake syntax is built up as the following.
 
 Comments are single line and everything after a ```#``` is a comment.
-Sample: ```# This is a comment```
+
+__Sample__: ```# This is a comment```
+
+A value is defined with the equals sign, a value defined outside a class is usually a constant or configuration value while all values inside a class definition defines a column to be generated.
+
+__Sample__: ```@datasource="jdbc/mysource"``` sets a special configuration values so that JFake knows what datasource to connect to
+
+A class is defined by an identfier followed by the definition inside a couple of curly braces, each value set inside the curly braces contributes to creating a column.
+
+__Sample__: To create a product table with automatic ID values and 3 columns of names one defines it like this, ```product {
+  id=@autoid
+  name="Product nr "+1:3
+}```
 
 Numbers and strings are the basic data types, numbers are alphanumeric integers and strings are enclosed with paired ' or " characters.
-Sample: ```123```   ``` "Hello world" ``` 
+
+__Sample__: ```123```   ``` "Hello world" ``` 
 
 A sequence is a linear numeric sequence of integer values, with this one can specify any range of (64bit) integers.
-Sample: ```1:1000``` generates the numbers 1:1000 or ```20:30``` generates the numbers 20 to 30
+
+__Sample__: ```1:1000``` generates the numbers 1:1000 or ```20:30``` generates the numbers 20 to 30
 
 A list is a sequence of user specified values, these are used to produce a defined set of values. A list specification will also include any sub-sets of values to produce a unified list.
-Sample: ```[1,2,3]``` is a list with 3 members containing the values 1,2,3, ```["Hello","World"]``` is a list containing the values "Hello" and "World" and finally a list that takes the contents of subsequences will be defined like ```[1:3,10:13]``` to generate a list with  1,2,3,10,11,12,13
+
+__Sample__: ```[1,2,3]``` is a list with 3 members containing the values 1,2,3, ```["Hello","World"]``` is a list containing the values "Hello" and "World" and finally a list that takes the contents of subsequences will be defined like ```[1:3,10:13]``` to generate a list with  1,2,3,10,11,12,13
 
 ## Sample
 
