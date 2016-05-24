@@ -29,7 +29,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
- *
+ * WORK IN PROGRESS.
+ * 
  * @author Jonas Lund
  */
 public class JPATarget implements JFakeTarget {
