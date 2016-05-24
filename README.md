@@ -30,10 +30,13 @@ __Sample__: ```@datasource="jdbc/mysource"``` sets a special configuration value
 
 A class is defined by an identfier followed by the definition inside a couple of curly braces, each value set inside the curly braces contributes to creating a column.
 
-__Sample__: To create a product table with automatic ID values and 3 columns of names one defines it like this, ```product {
+__Sample__: To create a product table with automatic ID values and 3 columns of names one defines it like this,
+```
+product {
   id=@autoid
   name="Product nr "+1:3
-}```
+}
+```
 
 Numbers and strings are the basic data types, numbers are alphanumeric integers and strings are enclosed with paired ' or " characters.
 
