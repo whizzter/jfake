@@ -1,0 +1,75 @@
+# Jfake forum sample configuration file.
+#
+
+
+# If you are using a JDBC connection directly this can be used
+#@connectionstring="jdbc:mysql://localhost:3306/forum?user=java&password=java"
+
+# Or if using a server supplied datasource then specify that
+@datasource='jdbc/forum'
+
+# The @autoid generator will start from this ID when generating.
+@startid=5000
+
+# Generate the forum table
+forum {
+	# Generate automatic ID's
+	id=@autoid
+
+	# Generate 2 id's from a list
+	name=["The game!","Offtopic"]
+
+	# Generate a forum order column from a list
+	forumorder=[100,1000]
+}
+
+# Generate a topic table
+topic {
+	# Automatically generate ID's
+	id=@autoid
+
+	# This line generates 5 formatted topics
+	name="Topic "+5:10+" "+['Blibb','Blabb','Ate my hamster','Halp'].random
+
+	# Randomly connect the forum ID column to a random ID from the forum table's ID column.
+	forum_id=forum.id.random
+}
+
+# Generate the post table
+post {
+	# Generate 80 ID's
+	id=@autoid{80}
+
+	# Concatenate between 2 and 80 strings randomly choosen from the list
+	text=(['lorem','ipsum','bla','honga'].random+' '){2:80}.concat+'the end'
+
+	# Connect to a random id topic
+	topic_id=topic.id.random
+
+	# Generate a random timestamp between 2010-01-01 00:00:00 and 2016-04-03 12:34:56
+	posttime=("2010".timestamp):("2016-04-30 12:34:56".timestamp).random.timestamp
+
+	# Connect to a random user
+	author_id=user.id.random
+}
+
+# Generate for the user table
+user {
+	# Generate user ID's in the range 4000:4005
+	id=4000:4005
+
+	# The first user has the name admin and the rest are named user1 to user5
+	username=["admin","user"+1:5]
+
+	# The first user gets the type ROOT while 5 are generated as USER
+	type=["ROOT","USER"{5}]
+
+	# This line is a bit more complex, it uses the pbkdf2 password derivation function
+	password=[["apa","pass"+1:5],@row.salt,@row.iteration].pbkdf2
+
+	# This line generates 64 crytographically secure random bytes that are then converted to a byte array
+	salt=@securebyte{64}.binary
+
+	# This is a somewhat current recommendation of iterations to use with PBKDF2, check OWASP for updated recommendations
+	iteration=10000
+}
