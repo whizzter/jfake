@@ -1,0 +1,27 @@
+# Simple product/receipt jfake file
+
+# What datasource do we use to talk to the database
+@datasource="java:app/jdbc/ejb1"
+
+# We want to start generating ID's at this ID (to avoid initial conflicts with JPA)
+@startid=5000
+
+# Generate product table
+product {
+    # Generate automatic ID
+    id = @autoid
+    # Generate some sample data
+    name = ["Ferrari","Folka","Dator"]
+}
+
+# Generate receipt table
+receipt {
+    # Generate ID table
+    id = @autoid
+
+    # Generate some sequential addresses.
+    address = "Database road "+1:20
+
+    # Generate a random product ID link
+    product_id = product.id.random
+}
