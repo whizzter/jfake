@@ -57,6 +57,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import se.jlim.jfake.expression.AddExpression;
+import se.jlim.jfake.expression.IndexExpression;
 import se.jlim.jfake.expression.PropertyExpression;
 import se.jlim.jfake.expression.PropertyHolder;
 import se.jlim.jfake.expression.RowExpression;
@@ -411,7 +412,7 @@ public class JFake {
 		return parseSuffixExpression(toks, 0);
 	}
 
-	final static String[][] ops = new String[][]{{"+"}, {"{", "."}, {":"}};
+	final static String[][] ops = new String[][]{{"+"}, {"{", ".","["}, {":"}};
 
 	private Expression parseSuffixExpression(LinkedList<Token> toks, int opLevel) throws ParseException {
 		if (opLevel == ops.length) {
@@ -458,6 +459,18 @@ public class JFake {
 								throw new ParseException("Expected end } but found", end);
 							}
 							expr=new RepeatExpression(op,expr,repeat);
+							continue again;
+						}
+						case "[" : {
+							Expression index = parseExpression(toks);
+							if (toks.isEmpty()) {
+								throw new ParseException("Operator "+op.str+" is missing the index part of the expression",op);
+							}
+							Token end=toks.removeFirst();
+							if (!end.str.equals("]")) {
+								throw new ParseException("Expected end ] in index expression but found  ",op);
+							}
+							expr=new IndexExpression(op,expr,index);
 							continue again;
 						}
 						default:
