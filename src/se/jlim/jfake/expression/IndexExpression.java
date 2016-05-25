@@ -42,7 +42,7 @@ public class IndexExpression extends CompoundExpression implements Generator {
 
 	@Override
 	public Long size() {
-		return null;
+		return compiled[1].size();
 	}
 
 	@Override
